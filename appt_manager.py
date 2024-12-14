@@ -104,9 +104,7 @@ def main():
                     print(f"Appointment: {day} {start}:00 - {appt.get_end_time_hour()} for {appt.client_name}:00 has been cancelled!")
                     appt.cancel()
                     break
-                    
-            #Continue, unfinished
-
+                
         if getInput == "5":
             print("")
             appt_manager2.change_appointment_by_day(appointment_list)

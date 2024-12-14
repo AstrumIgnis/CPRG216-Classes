@@ -1,45 +1,86 @@
+import os 
 from appointment import Appointment
 
-def show_appointments_by_name(listOfAppt, client_search):
-    for appt in listOfAppt:
-        if client_search.lower() in appt.client_name.lower():
-            print(appt)
+def create_weekly_calendar(appointments_list):
+    """
+    Purpose: Function will create a weekly calendar 
+    Parameters: None
+    Retunrs: Creates new Appointment object and adds it to the appointment list (i.e. calendar)
+    """
+    #This clears any previous appointments
+    appointments_list.clear()  
+    week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 
-def show_appointments_by_day(listOfAppt, day):
-    for appt in listOfAppt:
-        if appt.day_of_week == day:
-            print(appt)
+    # Add an Appointment object for each day and hour
+    for days in week:
+        for hour in range(9, 17):  # 9 AM to 4 PM
+            appointments_list.append(Appointment(day_of_week=days, start_time_hour=str(hour)))
 
-def change_appointment_by_day(listOfAppt):
-    day = input("What day: ").title()
-    startHour = input("Enter start hour (24 hour clock): ")
-    for appt in listOfAppt:
-        if day == appt.day_of_week and startHour == appt.start_time_hour:
-            newDay = input("Enter a new day: ").title()
-            newStartHour = input("Enter start hour (24 hour clock): ")
-            appt.day_of_week = newDay
-            appt.start_time_hour = newStartHour
-            print(f"Appointment for {appt.client_name} has been changed to:\nDay = {appt.day_of_week}\nTime = {appt.start_time_hour}")
-    print("That time slot hasn't been booked and doesn't need to be changed")
-    return
-    
+def load_scheduled_appointments(appointments_list):
+    """
+    Purpose: Will load scheduled appointments from a file into the appointment list.
+    Parameters: Sorts the appointments by their day and time
+    Returns: Number of scheduled appointments loaded
+    """
+    fileName = input("Enter the appointment filename: ").strip()
 
-def calculate_feed_per_day(listOfAppt):
-    print("Fees calculation per day....")
-    day = input("What day: ").title()
-    totalFees = 0
-    for appt in listOfAppt:
-        if appt.day_of_week == day:
-            # Mens cut
-            if appt.appt_type == 1:
-                totalFees += 40
-            # Ladies cut
-            if appt.appt_type == 2:
-                totalFees += 60
-            # Mens colouring
-            if appt.appt_type == 3:
-                totalFees += 40
-            # Ladies colouring
-            if appt.appt_type == 4:
-                totalFees += 80
-    print(f"Total fees for {day} is {totalFees}")
+    if not os.path.exists(fileName):
+        print("File not found")
+        return 0
+
+    with open(fileName, "r") as file:
+        lines = file.readlines()
+
+    count = 0
+    for line in lines:
+        data = line.strip().split(",")
+
+        # Only proceed if there are the correct number of elements
+        if len(data) == 5:  
+            client_name, client_phone, appt_type, day_of_week, start_time_hour = data
+            appt_type = int(appt_type)
+
+            # Find the appointment by day and time
+            found_appointment = find_appointment_by_time(appointments_list, day_of_week, start_time_hour)
+            if found_appointment:
+                found_appointment.schedule(client_name, client_phone, appt_type)
+                count += 1
+
+    return count
+
+def print_menu():
+    """
+    Purpose: To display a menu for the user to select
+    Parameters: None
+    Returns: The function the user selects
+    """
+    print("\n==================================================")
+    print("Hair Salon Appointment Manager")
+    print("==================================================")
+    print("1) Schedule an Appointment")
+    print("2) Find Appointment by Name")
+    print("3) Print Calendar for a Specfic Day")
+    print("4) Cancel an Appointment")
+    print("5) Change an Appointment")
+    print("6) Calculate Total Fees for a Day")
+    print("7) Calaulate Total Weekly Fees")
+    print("9) Exit the System")
+
+    user_option = {"1", "2", "3", "4", "5", "6", "7", "9"}
+    choice = input("Enter your Selection: ").strip()
+    while choice not in user_option:
+        print("Invalid Option")
+        choice = input("Enter your choice: ").strip()
+    return choice
+
+def find_appointment_by_time(appointments_list, day, start_hour):
+    """
+    Purpose: Will find an appointment by day and start hour fromt the list
+    Parameters: None
+    Returns: The appointment if possible
+    """
+    for appointment in appointments_list:
+        if appointment.get_day_of_week() == day and appointment.get_start_time_hour() == start_hour:
+            return appointment
+    return None
+
