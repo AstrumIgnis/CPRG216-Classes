@@ -26,25 +26,21 @@ def load_scheduled_appointments(appointments_list):
 
     if not os.path.exists(fileName):
         print("File not found")
-        return 0
+        return 
 
     with open(fileName, "r") as file:
         lines = file.readlines()
 
     count = 0
     for line in lines:
-        data = line.strip().split(",")
+        line = line.strip().split(",")
+        name, number, appt_type, day, time = line[0], line[1], line[2], line[3], line[4]
 
-        # Only proceed if there are the correct number of elements
-        if len(data) == 5:  
-            client_name, client_phone, appt_type, day_of_week, start_time_hour = data
-            appt_type = int(appt_type)
-
-            # Find the appointment by day and time
-            found_appointment = find_appointment_by_time(appointments_list, day_of_week, start_time_hour)
-            if found_appointment:
-                found_appointment.schedule(client_name, client_phone, appt_type)
-                count += 1
+        # Find the appointment by day and time
+        found_appointment = find_appointment_by_time(appointments_list, day, time)
+        if found_appointment:
+            found_appointment.schedule(name, number, int(appt_type))
+            count += 1
 
     return count
 
@@ -66,11 +62,11 @@ def print_menu():
     print("7) Calaulate Total Weekly Fees")
     print("9) Exit the System")
 
-    user_option = {"1", "2", "3", "4", "5", "6", "7", "9"}
+    user_option = ["1", "2", "3", "4", "5", "6", "7", "9"]
     choice = input("Enter your Selection: ").strip()
     while choice not in user_option:
         print("Invalid Option")
-        choice = input("Enter your choice: ").strip()
+        choice = input("Enter your Selection: ").strip()
     return choice
 
 def find_appointment_by_time(appointments_list, day, start_hour):
@@ -80,7 +76,7 @@ def find_appointment_by_time(appointments_list, day, start_hour):
     Returns: The appointment if possible
     """
     for appointment in appointments_list:
-        if appointment.get_day_of_week() == day and appointment.get_start_time_hour() == start_hour:
-            return appointment
-    return None
+        if appointment.day_of_week == day:
+            if appointment.start_time_hour == int(start_hour):
+                return appointment
 
