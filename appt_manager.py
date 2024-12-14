@@ -4,18 +4,18 @@ import appt_manager1
 import appt_manager2
 
 
-appointment_list = []
+appointment_list = [] #Creates a list of the appointment objects
 
 appt_manager1.create_weekly_calendar(appointment_list)
 
 
 
-def calculate_weekly_fees(appointment_list):
+def calculate_weekly_fees(appointment_list): #Function that calculates the weekly fees
     totalFees = 0
-    for appt in appointment_list:
+    for appt in appointment_list: #Checks for each appointment in the appointments list
           # Mens cut
-        if appt.appt_type == 1:
-               totalFees += 40
+        if appt.appt_type == 1: #Checks what the appointment type is and calculates the fee based on that
+               totalFees += 40 #Adds the fee based on the appointment type to the total fee
            # Ladies cut
         if appt.appt_type == 2:
                totalFees += 60
@@ -24,19 +24,19 @@ def calculate_weekly_fees(appointment_list):
                totalFees += 40
            # Ladies colouring
         if appt.appt_type == 4:
-               totalFees += 80
-    print(f"Total weekly fees is ${totalFees}")
+               totalFees += 80 
+    print(f"Total weekly fees is ${totalFees}") #Outputs the total fee
 
-def save_scheduled_appointments(appointment_list):
-    saved_appointments = 0
-    choice = input("Would you like to save all scheduled appointments to a file (Y/N)? ").upper()
-    if choice == "Y":
+def save_scheduled_appointments(appointment_list): #Saves the scheduled appointments
+    saved_appointments = 0 #Sets the saved appointments to 0
+    choice = input("Would you like to save all scheduled appointments to a file (Y/N)? ").upper() #Asks if the user  they would like to save the appointments
+    if choice == "Y": #If the output is yes, the users inputs the file name 
         filename = input("Enter appointment filename: ")
-        if os.path.isfile(filename):
-            choice = input("File already exists, do you want to overwrite it (Y/N)? ").upper()
-            if choice == "N":
+        if os.path.isfile(filename): #Checks if the file name already exists
+            choice = input("File already exists, do you want to overwrite it (Y/N)? ").upper() #User inputs whether they want to overwrite it
+            if choice == "N": #If the choice is no, it will create a new file instead
                 newFile = input("Enter appointment filename: ")
-                with open(f"{newFile}", "x") as myfile:
+                with open(f"{newFile}", "x") as myfile: 
                     for appointment in appointment_list:                 
                         if appointment.appt_type != 0:                     
                             myfile.write(appointment.format_record() + "\n")
@@ -54,7 +54,12 @@ def save_scheduled_appointments(appointment_list):
     print("Good Bye!")
     
 
-def main():
+def main(): 
+    '''
+    Parameters: Requires the rest of the functions from part A, and the individual parts from part B
+    Purpose: Loops the main menu, and allows users to select what they would like to do. Based on what the user selects, it will call that function.
+    Returns: Returns whether the function was successful or not
+    '''
     appt_manager1.load_scheduled_appointments(appointment_list) 
     while True:
         getInput = appt_manager1.print_menu()
